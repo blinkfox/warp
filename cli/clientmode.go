@@ -34,7 +34,7 @@ var (
 // Put command.
 var clientCmd = cli.Command{
 	Name:   "client",
-	Usage:  "run warp in client mode, accepting connections to run benchmarks",
+	Usage:  "在客户端模式下运行 warp，接受连接来运行基准测试",
 	Action: mainClient,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, clientFlags),
@@ -69,11 +69,11 @@ func mainClient(ctx *cli.Context) error {
 		}
 	case 0:
 	default:
-		fatal(errInvalidArgument(), "Too many parameters")
+		fatal(errInvalidArgument(), "参数太多")
 	}
 	http.HandleFunc("/ws", serveWs)
 	console.Infoln("Listening on", addr)
-	fatalIf(probe.NewError(http.ListenAndServe(addr, nil)), "Unable to start client")
+	fatalIf(probe.NewError(http.ListenAndServe(addr, nil)), "无法启动客户端")
 	return nil
 }
 

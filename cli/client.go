@@ -53,10 +53,10 @@ func newClient(ctx *cli.Context) func() (cl *minio.Client, done func()) {
 	hosts := parseHosts(ctx.String("host"))
 	switch len(hosts) {
 	case 0:
-		fatalIf(probe.NewError(errors.New("no host defined")), "Unable to create MinIO client")
+		fatalIf(probe.NewError(errors.New("no host defined")), "无法创建 MinIO 客户端")
 	case 1:
 		cl, err := getClient(ctx, hosts[0])
-		fatalIf(probe.NewError(err), "Unable to create MinIO client")
+		fatalIf(probe.NewError(err), "无法创建 MinIO 客户端")
 
 		return func() (*minio.Client, func()) {
 			return cl, func() {}
@@ -71,7 +71,7 @@ func newClient(ctx *cli.Context) func() (cl *minio.Client, done func()) {
 		clients := make([]*minio.Client, len(hosts))
 		for i := range hosts {
 			cl, err := getClient(ctx, hosts[i])
-			fatalIf(probe.NewError(err), "Unable to create MinIO client")
+			fatalIf(probe.NewError(err), "无法创建 MinIO 客户端")
 			clients[i] = cl
 		}
 		return func() (*minio.Client, func()) {
@@ -88,7 +88,7 @@ func newClient(ctx *cli.Context) func() (cl *minio.Client, done func()) {
 		clients := make([]*minio.Client, len(hosts))
 		for i := range hosts {
 			cl, err := getClient(ctx, hosts[i])
-			fatalIf(probe.NewError(err), "Unable to create MinIO client")
+			fatalIf(probe.NewError(err), "无法创建 MinIO 客户端")
 			clients[i] = cl
 		}
 		running := make([]int, len(hosts))
@@ -154,7 +154,7 @@ func getClient(ctx *cli.Context, host string) (*minio.Client, error) {
 		// if Signature version '2' use NewV2 directly.
 		creds = credentials.NewStaticV2(ctx.String("access-key"), ctx.String("secret-key"), "")
 	default:
-		fatal(probe.NewError(errors.New("unknown signature method. S3V2 and S3V4 is available")), strings.ToUpper(ctx.String("signature")))
+		fatal(probe.NewError(errors.New("未知的签名方法，请提供 S3V2 和 S3V4 签名")), strings.ToUpper(ctx.String("signature")))
 	}
 
 	cl, err := minio.New(host, &minio.Options{
@@ -224,7 +224,7 @@ func parseHosts(h string) []string {
 		}
 		patterns, perr := ellipses.FindEllipsesPatterns(host)
 		if perr != nil {
-			fatalIf(probe.NewError(perr), "Unable to parse host parameter")
+			fatalIf(probe.NewError(perr), "无法解析主机 host 参数")
 
 			log.Fatal(perr.Error())
 		}
@@ -247,10 +247,10 @@ func mustGetSystemCertPool() *x509.CertPool {
 func newAdminClient(ctx *cli.Context) *madmin.AdminClient {
 	hosts := parseHosts(ctx.String("host"))
 	if len(hosts) == 0 {
-		fatalIf(probe.NewError(errors.New("no host defined")), "Unable to create MinIO admin client")
+		fatalIf(probe.NewError(errors.New("no host defined")), "无法创建 MinIO 客户端")
 	}
 	cl, err := madmin.New(hosts[0], ctx.String("access-key"), ctx.String("secret-key"), ctx.Bool("tls"))
-	fatalIf(probe.NewError(err), "Unable to create MinIO admin client")
+	fatalIf(probe.NewError(err), "无法创建 MinIO 客户端")
 	cl.SetCustomTransport(clientTransport(ctx))
 	cl.SetAppInfo(appName, pkg.Version)
 	return cl

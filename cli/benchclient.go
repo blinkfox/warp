@@ -84,7 +84,7 @@ func (s serverRequest) executeBenchmark(ctx context.Context) (*clientBenchmark, 
 	console.Infoln("Executing", cmd.Name, "benchmark.")
 	if globalDebug {
 		// params have secret, so disable by default.
-		console.Infoln("Params:", s.Benchmark.Flags, ctx2.Args())
+		console.Infoln("参数:", s.Benchmark.Flags, ctx2.Args())
 	}
 	go func() {
 		err := runCommand(ctx2, cmd)
@@ -113,18 +113,18 @@ var wsUpgrader = websocket.Upgrader{
 func serveWs(w http.ResponseWriter, r *http.Request) {
 	ws, err := wsUpgrader.Upgrade(w, r, nil)
 	if err != nil {
-		console.Error("upgrade:", err.Error())
+		console.Error("升级:", err.Error())
 		return
 	}
 
 	defer func() {
 		ws.Close()
-		console.Infoln("Closing connection")
+		console.Infoln("关闭连接")
 	}()
 	var s serverInfo
 	err = ws.ReadJSON(&s)
 	if err != nil {
-		console.Error("Error reading server info:", err.Error())
+		console.Error("读取服务器信息时出错:", err.Error())
 		return
 	}
 	if err = s.validate(); err != nil {
@@ -138,7 +138,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		// First connection or server disconnected.
 		connected = s
 	} else if connected.ID != s.ID {
-		err = errors.New("another server already connected")
+		err = errors.New("已连接到另一台服务器")
 	}
 	connectedMu.Unlock()
 	if err != nil {
@@ -146,7 +146,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	console.Infoln("Accepting connection from server:", s.ID)
+	console.Infoln("接受来自服务器的连接:", s.ID)
 	defer func() {
 		// When we return, reset connection info.
 		connectedMu.Lock()
@@ -158,23 +158,23 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	// Confirm the connection
 	err = ws.WriteJSON(clientReply{Time: time.Now()})
 	if err != nil {
-		console.Error("Writing response:", err)
+		console.Error("写入响应:", err)
 		return
 	}
 	for {
 		var req serverRequest
 		err := ws.ReadJSON(&req)
 		if err != nil {
-			console.Error("Reading server message:", err.Error())
+			console.Error("正在读取服务器消息:", err.Error())
 			return
 		}
 		if globalDebug {
-			console.Infof("Request: %v\n", req.Operation)
+			console.Infof("请求: %v\n", req.Operation)
 		}
 		var resp clientReply
 		switch req.Operation {
 		case serverReqDisconnect:
-			console.Infoln("Received Disconnect")
+			console.Infoln("收到断开连接")
 			activeBenchmarkMu.Lock()
 			ab := activeBenchmark
 			activeBenchmarkMu.Unlock()
@@ -195,7 +195,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			_, err := req.executeBenchmark(context.Background())
 			resp.Type = clientRespBenchmarkStarted
 			if err != nil {
-				console.Errorln("Starting benchmark:", err)
+				console.Errorln("开始基准测试:", err)
 				resp.Err = err.Error()
 			}
 		case serverReqStartStage:
@@ -203,7 +203,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			ab := activeBenchmark
 			activeBenchmarkMu.Unlock()
 			if ab == nil {
-				resp.Err = "no benchmark running"
+				resp.Err = "没有基准测试在运行"
 				break
 			}
 			ab.Lock()
@@ -211,7 +211,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			ab.Unlock()
 			info, ok := stageInfo[req.Stage]
 			if !ok {
-				resp.Err = "stage not found"
+				resp.Err = "阶段不存在"
 				break
 			}
 			if info.startRequested {
@@ -238,7 +238,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			ab := activeBenchmark
 			activeBenchmarkMu.Unlock()
 			if ab == nil {
-				resp.Err = "no benchmark running"
+				resp.Err = "没有基准测试在运行"
 				break
 			}
 			resp.Type = clientRespStatus
@@ -252,7 +252,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			}
 			info, ok := stageInfo[req.Stage]
 			if !ok {
-				resp.Err = "stage not found"
+				resp.Err = "阶段不存在"
 				break
 			}
 			select {
@@ -270,7 +270,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			ab := activeBenchmark
 			activeBenchmarkMu.Unlock()
 			if ab == nil {
-				resp.Err = "no benchmark running"
+				resp.Err = "没有基准测试在运行"
 				break
 			}
 			resp.Type = clientRespOps
@@ -278,15 +278,15 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 			resp.Ops = ab.results
 			ab.Unlock()
 		default:
-			resp.Err = "unknown command"
+			resp.Err = "未知的命令"
 		}
 		resp.Time = time.Now()
 		if globalDebug {
-			console.Infof("Sending %v\n", resp.Type)
+			console.Infof("发送中 %v\n", resp.Type)
 		}
 		err = ws.WriteJSON(resp)
 		if err != nil {
-			console.Error("Writing response:", err)
+			console.Error("写入响应:", err)
 			return
 		}
 	}

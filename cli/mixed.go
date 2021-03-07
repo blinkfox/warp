@@ -32,31 +32,31 @@ var (
 		cli.IntFlag{
 			Name:  "objects",
 			Value: 2500,
-			Usage: "Number of objects to upload.",
+			Usage: "要上传的对象数.",
 		},
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "10MiB",
-			Usage: "Size of each generated object. Can be a number or 10KiB/MiB/GiB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 		cli.Float64Flag{
 			Name:  "get-distrib",
-			Usage: "The amount of GET operations.",
+			Usage: "GET 请求操作量.",
 			Value: 45,
 		},
 		cli.Float64Flag{
 			Name:  "stat-distrib",
-			Usage: "The amount of STAT operations.",
+			Usage: "STAT 请求操作量.",
 			Value: 30,
 		},
 		cli.Float64Flag{
 			Name:  "put-distrib",
-			Usage: "The amount of PUT operations.",
+			Usage: "PUT 请求操作量.",
 			Value: 15,
 		},
 		cli.Float64Flag{
 			Name:  "delete-distrib",
-			Usage: "The amount of DELETE operations. Must be at least the same as PUT.",
+			Usage: "DELETE 请求操作量. 必须不多于 PUT 请求量.",
 			Value: 10,
 		},
 	}
@@ -64,18 +64,18 @@ var (
 
 var mixedCmd = cli.Command{
 	Name:   "mixed",
-	Usage:  "benchmark mixed objects",
+	Usage:  "混合基准测试",
 	Action: mainMixed,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, mixedFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS]
-  -> see https://github.com/minio/warp#mixed
+  -> 示例: 'warp mixed --host=127.0.0.1:9000 --access-key=minio --secret-key=minio123 --autoterm'
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -94,7 +94,7 @@ func mainMixed(ctx *cli.Context) error {
 		},
 	}
 	err := dist.Generate(ctx.Int("objects") * 2)
-	fatalIf(probe.NewError(err), "Invalid distribution")
+	fatalIf(probe.NewError(err), "无效的请求分配比例")
 	b := bench.Mixed{
 		Common: bench.Common{
 			Client:      newClient(ctx),
@@ -116,7 +116,7 @@ func mainMixed(ctx *cli.Context) error {
 
 func checkMixedSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("Command takes no arguments")
+		console.Fatal("命令没有附带参数")
 	}
 
 	checkAnalyze(ctx)

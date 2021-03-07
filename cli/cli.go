@@ -210,7 +210,7 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 	}
 
 	app.HideHelpCommand = true
-	app.Usage = "Benchmark tool for S3 compatible object storage systems.\n\tFor usage details see https://github.com/minio/warp"
+	app.Usage = "兼容 S3 对象存储系统的基准性能测试工具.\n\t使用的详细信息，请参见 https://github.com/blinkfox/warp"
 	app.Commands = commands
 	app.Author = "MinIO, Inc."
 	app.Version = pkg.Version + " - " + pkg.ShortCommitID
@@ -226,20 +226,20 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 
 func installAutoCompletion() {
 	if runtime.GOOS == "windows" {
-		console.Infoln("autocompletion feature is not available for this operating system")
+		console.Infoln("Windows 系统中不能做到自动补全的功能")
 		return
 	}
 
 	if completeinstall.IsInstalled(filepath.Base(os.Args[0])) || completeinstall.IsInstalled(appName) {
-		console.Infoln("autocompletion is already enabled in your '$SHELLRC'")
+		console.Infoln("你的 '$SHELLRC' 已启用自动补全的功能")
 		return
 	}
 
 	err := completeinstall.Install(filepath.Base(os.Args[0]))
 	if err != nil {
-		fatalIf(probe.NewError(err), "Unable to install auto-completion.")
+		fatalIf(probe.NewError(err), "无法安装自动补全的功能.")
 	} else {
-		console.Infoln("enabled autocompletion in '$SHELLRC'. Please restart your shell.")
+		console.Infoln("在 '$SHELLRC' 中启用了自动补全功能，请重新启动您的 Shell.")
 	}
 }
 
@@ -247,7 +247,7 @@ func installAutoCompletion() {
 // Returns a map of current os/arch/platform/memstats.
 func getSystemData() map[string]string {
 	host, e := os.Hostname()
-	fatalIf(probe.NewError(e), "Unable to determine the hostname.")
+	fatalIf(probe.NewError(e), "无法确定主机名.")
 
 	memstats := &runtime.MemStats{}
 	runtime.ReadMemStats(memstats)
