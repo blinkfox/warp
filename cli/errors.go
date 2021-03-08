@@ -33,6 +33,6 @@ var errDummy = func() *probe.Error {
 type invalidArgumentErr error
 
 var errInvalidArgument = func() *probe.Error {
-	msg := "Invalid arguments provided, please refer " + "`" + appName + " <command> -h` for relevant documentation."
+	msg := "提供的参数无效，请参阅 " + "`" + appName + " <command> -h` 命令的相关文档."
 	return probe.NewError(invalidArgumentErr(errors.New(msg))).Untrace()
 }

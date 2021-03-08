@@ -28,36 +28,36 @@ var (
 		cli.IntFlag{
 			Name:  "objects",
 			Value: 25000,
-			Usage: "Number of objects to upload.",
+			Usage: "要上传的对象数.",
 		},
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "1KiB",
-			Usage: "Size of each generated object. Can be a number or 10KiB/MiB/GiB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 		cli.IntFlag{
 			Name:  "batch",
 			Value: 100,
-			Usage: "Number of DELETE operations per batch.",
+			Usage: "每批的删除请求操作数.",
 		},
 	}
 )
 
 var deleteCmd = cli.Command{
 	Name:   "delete",
-	Usage:  "benchmark delete objects",
+	Usage:  "基准测试中删除对象 (delete) 的请求操作",
 	Action: mainDelete,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, deleteFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-  The benchmark will end when either all objects have been deleted or the durations specified with -duration has been reached. 
-USAGE:
+  当所有对象都被删除了或者达到了指定的 -duration 持续时间，基准测试就会结束. 
+使用:
   {{.HelpName}} [FLAGS]
   -> see https://github.com/minio/warp#delete
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -84,15 +84,15 @@ func mainDelete(ctx *cli.Context) error {
 
 func checkDeleteSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("Command takes no arguments")
+		console.Fatal("命令中没有附带参数")
 	}
 	checkAnalyze(ctx)
 	checkBenchmark(ctx)
 	if ctx.Int("batch") < 1 {
-		console.Fatal("batch size much be 1 or bigger")
+		console.Fatal("批量大小必须大于等于 1")
 	}
 	wantO := ctx.Int("batch") * ctx.Int("concurrent") * 4
 	if ctx.Int("objects") < wantO {
-		console.Fatalf("Too few objects: With current --batch  and --concurrent settings, at least %d objects should be used for a valid benchmark. Use --objects=%d", wantO, wantO)
+		console.Fatalf("对象太少: 请使用 --batch 和 --concurrent 参数进行设置, 有效的基准测试，至少需要 %d 个对象数. 可以使用 --objects=%d 来指定", wantO, wantO)
 	}
 }

@@ -100,7 +100,7 @@ func (c *Common) createEmptyBucket(ctx context.Context) error {
 	}
 
 	if !x {
-		console.Infof("\rCreating Bucket %q...", c.Bucket)
+		console.Infof("\r正在创建桶 %q...", c.Bucket)
 		err := cl.MakeBucket(ctx, c.Bucket, minio.MakeBucketOptions{
 			Region: c.Location,
 		})
@@ -124,7 +124,7 @@ func (c *Common) createEmptyBucket(ctx context.Context) error {
 	}
 
 	if c.Clear {
-		console.Infof("\rClearing Bucket %q...", c.Bucket)
+		console.Infof("\r正在清理桶数据 %q...", c.Bucket)
 		c.deleteAllInBucket(ctx)
 	}
 	return nil

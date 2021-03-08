@@ -132,7 +132,7 @@ func (m *MixedDistribution) deleteRandomObj() generator.Object {
 		delete(m.objects, k)
 		return o
 	}
-	panic("ran out of objects")
+	panic("没有对象了")
 }
 
 func (m *MixedDistribution) addObj(o generator.Object) {
@@ -268,7 +268,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					o, err := client.GetObject(nonTerm, g.Bucket, obj.Name, getOpts)
 					fbr.r = o
 					if err != nil {
-						g.Error("download error:", err)
+						g.Error("下载出错:", err)
 						op.Err = err.Error()
 						op.End = time.Now()
 						rcv <- op
@@ -278,13 +278,13 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					}
 					n, err := io.Copy(ioutil.Discard, &fbr)
 					if err != nil {
-						g.Error("download error:", err)
+						g.Error("下载出错:", err)
 						op.Err = err.Error()
 					}
 					op.FirstByte = fbr.t
 					op.End = time.Now()
 					if n != obj.Size && op.Err == "" {
-						op.Err = fmt.Sprint("unexpected download size. want:", obj.Size, ", got:", n)
+						op.Err = fmt.Sprint("不符合期望的下载大小. 需要的是:", obj.Size, ", 实际上是:", n)
 						g.Error(op.Err)
 					}
 					rcv <- op
@@ -308,7 +308,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					res, err := client.PutObject(nonTerm, g.Bucket, obj.Name, obj.Reader, obj.Size, putOpts)
 					op.End = time.Now()
 					if err != nil {
-						g.Error("upload error:", err)
+						g.Error("下载出错:", err)
 						op.Err = err.Error()
 					}
 					obj.VersionID = res.VersionID
@@ -341,7 +341,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					op.End = time.Now()
 					clDone()
 					if err != nil {
-						g.Error("delete error: ", err)
+						g.Error("删除出错: ", err)
 						op.Err = err.Error()
 					}
 					rcv <- op
@@ -360,7 +360,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					var err error
 					objI, err := client.StatObject(nonTerm, g.Bucket, obj.Name, statOpts)
 					if err != nil {
-						g.Error("stat error: ", err)
+						g.Error("stat 错误: ", err)
 						op.Err = err.Error()
 					}
 					op.End = time.Now()
@@ -372,7 +372,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					objDone()
 					clDone()
 				default:
-					g.Error("unknown operation: ", operation)
+					g.Error("未知的操作: ", operation)
 				}
 			}
 		}(i)

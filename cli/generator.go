@@ -31,11 +31,11 @@ var genFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "obj.generator",
 		Value: "random",
-		Usage: "Use specific data generator",
+		Usage: "指定使用特定的数据生成器 (generator)",
 	},
 	cli.BoolFlag{
 		Name:  "obj.randsize",
-		Usage: "Randomize size of objects so they will be up to the specified size",
+		Usage: "随机化对象的大小，使其达到指定的大小",
 	},
 }
 
@@ -48,13 +48,13 @@ func newGenSourceCSV(ctx *cli.Context) func() generator.Source {
 	g := generator.WithCSV().Size(25, 1000)
 
 	size, err := toSize(ctx.String("obj.size"))
-	fatalIf(probe.NewError(err), "Invalid obj.size specified")
+	fatalIf(probe.NewError(err), "指定的 obj.size 无效")
 	src, err := generator.NewFn(g.Apply(),
 		generator.WithPrefixSize(prefixSize),
 		generator.WithSize(int64(size)),
 		generator.WithRandomSize(ctx.Bool("obj.randsize")),
 	)
-	fatalIf(probe.NewError(err), "Unable to create data generator")
+	fatalIf(probe.NewError(err), "无法创建数据生成器 (generator)")
 	return src
 }
 
@@ -72,18 +72,18 @@ func newGenSource(ctx *cli.Context) func() generator.Source {
 	case "csv":
 		g = generator.WithCSV().Size(25, 1000)
 	default:
-		err := errors.New("unknown generator type:" + ctx.String("generator"))
-		fatal(probe.NewError(err), "Invalid -generator parameter")
+		err := errors.New("未知的生成器 (generator) 类型:" + ctx.String("generator"))
+		fatal(probe.NewError(err), "无效的 -generator 参数")
 		return nil
 	}
 	size, err := toSize(ctx.String("obj.size"))
-	fatalIf(probe.NewError(err), "Invalid obj.size specified")
+	fatalIf(probe.NewError(err), "指定的 obj.size 无效")
 	src, err := generator.NewFn(g.Apply(),
 		generator.WithPrefixSize(prefixSize),
 		generator.WithSize(int64(size)),
 		generator.WithRandomSize(ctx.Bool("obj.randsize")),
 	)
-	fatalIf(probe.NewError(err), "Unable to create data generator")
+	fatalIf(probe.NewError(err), "无法创建数据生成器 (generator)")
 	return src
 }
 

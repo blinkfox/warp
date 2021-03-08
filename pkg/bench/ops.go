@@ -1068,14 +1068,14 @@ func OperationsFromCSV(r io.Reader, analyzeOnly bool, offset, limit int, log fun
 			ClientID:  getClient(clientID),
 		})
 		if log != nil && len(ops)%1000000 == 0 {
-			log("\r%d operations loaded...", len(ops))
+			log("\r%d 请求操作已加载 ...", len(ops))
 		}
 		if limit > 0 && len(ops) >= limit {
 			break
 		}
 	}
 	if log != nil {
-		log("\r%d operations loaded... Done!\n", len(ops))
+		log("\r%d 请求操作已加载完成!\n", len(ops))
 	}
 	return ops, nil
 }

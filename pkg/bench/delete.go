@@ -47,7 +47,7 @@ func (d *Delete) Prepare(ctx context.Context) error {
 		return err
 	}
 	src := d.Source()
-	console.Info("\rUploading ", d.CreateObjects, " objects of ", src.String())
+	console.Info("\r正在上传 ", d.CreateObjects, " 对象 ", src.String())
 	var wg sync.WaitGroup
 	wg.Add(d.Concurrency)
 	d.Collector = NewCollector()

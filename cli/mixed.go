@@ -41,22 +41,22 @@ var (
 		},
 		cli.Float64Flag{
 			Name:  "get-distrib",
-			Usage: "GET 请求操作量.",
+			Usage: "GET 请求操作权重量.",
 			Value: 45,
 		},
 		cli.Float64Flag{
 			Name:  "stat-distrib",
-			Usage: "STAT 请求操作量.",
+			Usage: "STAT 请求操作权重量.",
 			Value: 30,
 		},
 		cli.Float64Flag{
 			Name:  "put-distrib",
-			Usage: "PUT 请求操作量.",
+			Usage: "PUT 请求操作权重量.",
 			Value: 15,
 		},
 		cli.Float64Flag{
 			Name:  "delete-distrib",
-			Usage: "DELETE 请求操作量. 必须不多于 PUT 请求量.",
+			Usage: "DELETE 请求操作权重量. 须小于等于 PUT 请求权重量.",
 			Value: 10,
 		},
 	}
@@ -73,7 +73,7 @@ var mixedCmd = cli.Command{
 
 使用:
   {{.HelpName}} [FLAGS]
-  -> 示例: 'warp mixed --host=127.0.0.1:9000 --access-key=minio --secret-key=minio123 --autoterm'
+  -> 示例如: 'warp mixed --host=127.0.0.1:9000 --access-key=minio --secret-key=minio123 --autoterm'
 
 参数:
   {{range .VisibleFlags}}{{.}}
@@ -116,7 +116,7 @@ func mainMixed(ctx *cli.Context) error {
 
 func checkMixedSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("命令没有附带参数")
+		console.Fatal("命令中没有附带参数")
 	}
 
 	checkAnalyze(ctx)

@@ -168,7 +168,7 @@ func (g *Select) Start(ctx context.Context, wait chan struct{}) (Operations, err
 				o, err := client.SelectObjectContent(nonTerm, g.Bucket, obj.Name, opts)
 				fbr.r = o
 				if err != nil {
-					g.Error("download error: ", err)
+					g.Error("下载出错: ", err)
 					op.Err = err.Error()
 					op.End = time.Now()
 					rcv <- op
@@ -176,7 +176,7 @@ func (g *Select) Start(ctx context.Context, wait chan struct{}) (Operations, err
 					continue
 				}
 				if _, err = io.Copy(ioutil.Discard, &fbr); err != nil {
-					g.Error("download error: ", err)
+					g.Error("下载出错: ", err)
 					op.Err = err.Error()
 					op.Size = 0
 				}

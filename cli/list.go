@@ -28,30 +28,30 @@ var (
 		cli.IntFlag{
 			Name:  "objects",
 			Value: 10000,
-			Usage: "Number of objects to upload. Rounded to have equal concurrent objects.",
+			Usage: "要上传的对象数. 四舍五入使其具有相等的并发对象数.",
 		},
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "1KB",
-			Usage: "Size of each generated object. Can be a number or 10KB/MB/GB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 	}
 )
 
 var listCmd = cli.Command{
 	Name:   "list",
-	Usage:  "benchmark list objects",
+	Usage:  "基准测试中列出对象 (list) 的请求操作",
 	Action: mainList,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, listFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS]
   -> see https://github.com/minio/warp#list
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -78,7 +78,7 @@ func mainList(ctx *cli.Context) error {
 
 func checkListSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("Command takes no arguments")
+		console.Fatal("命令中没有附带参数")
 	}
 
 	checkAnalyze(ctx)

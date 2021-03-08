@@ -135,21 +135,21 @@ func runServerBenchmark(ctx *cli.Context) (bool, error) {
 	// Connect to hosts, send benchmark requests.
 	for i := range conns.hosts {
 		resp, err := conns.roundTrip(i, req)
-		fatalIf(probe.NewError(err), "Unable to send benchmark info to warp client")
+		fatalIf(probe.NewError(err), "不能发送基准测试数据给 warp 客户端")
 		if resp.Err != "" {
-			fatalIf(probe.NewError(errors.New(resp.Err)), "Error received from warp client")
+			fatalIf(probe.NewError(errors.New(resp.Err)), "从 warp 客户端接收到了错误信息")
 		}
-		infoLn("Client ", conns.hostName(i), " connected...")
+		infoLn("客户端 ", conns.hostName(i), " 已连接 ...")
 		// Assume ok.
 	}
-	infoLn("All clients connected...")
+	infoLn("所有客户端均已连接 ...")
 
 	_ = conns.startStageAll(stagePrepare, time.Now().Add(time.Second), true)
 	err := conns.waitForStage(stagePrepare, true)
 	if err != nil {
-		fatalIf(probe.NewError(err), "Failed to prepare")
+		fatalIf(probe.NewError(err), "准备失败")
 	}
-	infoLn("All clients prepared...")
+	infoLn("所有客户端都已准备 ...")
 
 	const benchmarkWait = 3 * time.Second
 
@@ -159,12 +159,12 @@ func runServerBenchmark(ctx *cli.Context) (bool, error) {
 	}
 	err = conns.startStageAll(stageBenchmark, time.Now().Add(benchmarkWait), false)
 	if err != nil {
-		errorLn("Failed to start all clients", err)
+		errorLn("无法启动所有客户端", err)
 	}
-	infoLn("Running benchmark on all clients...")
+	infoLn("正在所有客户端上运行基准测试 ...")
 	err = conns.waitForStage(stageBenchmark, false)
 	if err != nil {
-		errorLn("Failed to keep connection to all clients", err)
+		errorLn("无法保持与所有客户端的连接", err)
 	}
 
 	fileName := ctx.String("benchdata")
@@ -173,7 +173,7 @@ func runServerBenchmark(ctx *cli.Context) (bool, error) {
 	}
 	prof.stop(context.Background(), ctx, fileName+".profiles.zip")
 
-	infoLn("Done. Downloading operations...")
+	infoLn("已完成. 正在下载相关的请求操作 ...")
 	downloaded := conns.downloadOps()
 	switch len(downloaded) {
 	case 0:
@@ -190,18 +190,18 @@ func runServerBenchmark(ctx *cli.Context) (bool, error) {
 	allOps.SortByStartTime()
 	f, err := os.Create(fileName + ".csv.zst")
 	if err != nil {
-		errorLn("Unable to write benchmark data:", err)
+		errorLn("无法写入基准测试数据:", err)
 	} else {
 		func() {
 			defer f.Close()
 			enc, err := zstd.NewWriter(f, zstd.WithEncoderLevel(zstd.SpeedBetterCompression))
-			fatalIf(probe.NewError(err), "Unable to compress benchmark output")
+			fatalIf(probe.NewError(err), "无法压缩基准测试数据到输出")
 
 			defer enc.Close()
 			err = allOps.CSV(enc, commandLine(ctx))
-			fatalIf(probe.NewError(err), "Unable to write benchmark output")
+			fatalIf(probe.NewError(err), "无法写入基准测试数据到输出")
 
-			infoLn(fmt.Sprintf("Benchmark data written to %q\n", fileName+".csv.zst"))
+			infoLn(fmt.Sprintf("基准测试数据写入到了 %q\n", fileName+".csv.zst"))
 		}()
 	}
 	monitor.OperationsReady(allOps, fileName, commandLine(ctx))
@@ -209,13 +209,13 @@ func runServerBenchmark(ctx *cli.Context) (bool, error) {
 
 	err = conns.startStageAll(stageCleanup, time.Now(), false)
 	if err != nil {
-		errorLn("Failed to clean up all clients", err)
+		errorLn("无法清理所有客户端的数据", err)
 	}
 	err = conns.waitForStage(stageCleanup, false)
 	if err != nil {
-		errorLn("Failed to keep connection to all clients", err)
+		errorLn("无法保持与所有客户端的连接", err)
 	}
-	infoLn("Cleanup done.\n")
+	infoLn("数据清理完成.\n")
 
 	return true, nil
 }
@@ -268,7 +268,7 @@ func (c *connections) hostName(i int) string {
 // hostName returns the remote host name of a connection.
 func (c *connections) disconnect(i int) {
 	if c.ws[i] != nil {
-		c.info("Disconnecting client: ", c.hostName(i))
+		c.info("断开客户端连接: ", c.hostName(i))
 		c.ws[i].WriteJSON(serverRequest{Operation: serverReqDisconnect})
 		c.ws[i].Close()
 		c.ws[i] = nil
@@ -317,7 +317,7 @@ func (c *connections) connect(i int) error {
 				host += ":" + strconv.Itoa(warpServerDefaultPort)
 			}
 			u := url.URL{Scheme: "ws", Host: host, Path: "/ws"}
-			c.info("Connecting to ", u.String())
+			c.info("正在连接到 ", u.String())
 			var err error
 			c.ws[i], _, err = websocket.DefaultDialer.Dial(u.String(), nil)
 			if err != nil {
@@ -357,7 +357,7 @@ func (c *connections) connect(i int) error {
 			c.ws[i] = nil
 			return err
 		}
-		c.errorF("Connection failed:%v, retrying...\n", err)
+		c.errorF("连接失败:%v, 重试中 ...\n", err)
 		tries++
 		time.Sleep(time.Second)
 	}
@@ -375,10 +375,10 @@ func (c *connections) startStage(i int, t time.Time, stage benchmarkStage) error
 		return err
 	}
 	if resp.Err != "" {
-		c.errorF("Client %v returned error: %v\n", c.hostName(i), resp.Err)
+		c.errorF("客户端 %v 返回了错误信息: %v\n", c.hostName(i), resp.Err)
 		return errors.New(resp.Err)
 	}
-	c.info("Client ", c.hostName(i), ": Requested stage ", stage, " start...")
+	c.info("客户端 ", c.hostName(i), ": 请求的阶段 ", stage, " 开始了 ...")
 	return nil
 }
 
@@ -387,7 +387,7 @@ func (c *connections) startStageAll(stage benchmarkStage, startAt time.Time, fai
 	var wg sync.WaitGroup
 	var gerr error
 	var mu sync.Mutex
-	c.info("Requesting stage ", stage, " start...")
+	c.info("请求阶段 ", stage, " 开始 ...")
 
 	for i, conn := range c.ws {
 		if conn == nil {
@@ -399,9 +399,9 @@ func (c *connections) startStageAll(stage benchmarkStage, startAt time.Time, fai
 			err := c.startStage(i, startAt, stage)
 			if err != nil {
 				if failOnErr {
-					fatalIf(probe.NewError(err), "Stage start failed.")
+					fatalIf(probe.NewError(err), "阶段启动失败.")
 				}
-				c.errLn("Starting stage error:", err)
+				c.errLn("阶段开始失败:", err)
 				mu.Lock()
 				if gerr == nil {
 					gerr = err
@@ -420,7 +420,7 @@ func (c *connections) startStageAll(stage benchmarkStage, startAt time.Time, fai
 func (c *connections) downloadOps() []bench.Operations {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	c.info("Downloading operations...")
+	c.info("正在下载相关请求操作 ...")
 	res := make([]bench.Operations, 0, len(c.ws))
 	for i, conn := range c.ws {
 		if conn == nil {
@@ -435,10 +435,10 @@ func (c *connections) downloadOps() []bench.Operations {
 					return
 				}
 				if resp.Err != "" {
-					c.errorF("Client %v returned error: %v\n", c.hostName(i), resp.Err)
+					c.errorF("客户端 %v 返回了错误: %v\n", c.hostName(i), resp.Err)
 					return
 				}
-				c.info("Client ", c.hostName(i), ": Operations downloaded.")
+				c.info("客户端 ", c.hostName(i), ": 相关操作下载完成.")
 
 				mu.Lock()
 				res = append(res, resp.Ops)
@@ -471,7 +471,7 @@ func (c *connections) waitForStage(stage benchmarkStage, failOnErr bool) error {
 				if err != nil {
 					c.disconnect(i)
 					if failOnErr {
-						fatalIf(probe.NewError(err), "Stage failed.")
+						fatalIf(probe.NewError(err), "阶段失败.")
 					}
 					c.errLn(err)
 					return
@@ -479,13 +479,13 @@ func (c *connections) waitForStage(stage benchmarkStage, failOnErr bool) error {
 				if resp.Err != "" {
 					c.disconnect(i)
 					if failOnErr {
-						fatalIf(probe.NewError(errors.New(resp.Err)), "Stage failed. Client %v returned error.", c.hostName(i))
+						fatalIf(probe.NewError(errors.New(resp.Err)), "阶段失败. 客户端 %v 返回了错误.", c.hostName(i))
 					}
-					c.errorF("Client %v returned error: %v\n", c.hostName(i), resp.Err)
+					c.errorF("客户端 %v 返回了错误: %v\n", c.hostName(i), resp.Err)
 					return
 				}
 				if resp.StageInfo.Finished {
-					c.info("Client ", c.hostName(i), ": Finished stage ", stage, "...")
+					c.info("客户端 ", c.hostName(i), ": 完成了阶段 ", stage, "...")
 					return
 				}
 				time.Sleep(time.Second)

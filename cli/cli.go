@@ -136,7 +136,7 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 
 	cli.HelpFlag = cli.BoolFlag{
 		Name:  "help, h",
-		Usage: "show help",
+		Usage: "显示帮助信息",
 	}
 
 	app := cli.NewApp()
@@ -210,9 +210,9 @@ func registerApp(name string, appCmds []cli.Command) *cli.App {
 	}
 
 	app.HideHelpCommand = true
-	app.Usage = "兼容 S3 对象存储系统的基准性能测试工具.\n\t使用的详细信息，请参见 https://github.com/blinkfox/warp"
+	app.Usage = "兼容 S3 对象存储系统的基准性能测试工具.\n\t使用的详细信息，请参见 https://github.com/minio/warp"
 	app.Commands = commands
-	app.Author = "MinIO, Inc."
+	app.Author = "MinIO, Inc. (blinkfox 翻译)"
 	app.Version = pkg.Version + " - " + pkg.ShortCommitID
 	app.Copyright = "(c) 2020 MinIO, Inc."
 	app.Compiled, _ = time.Parse(time.RFC3339, pkg.ReleaseTime)

@@ -51,7 +51,7 @@ func (g *Get) Prepare(ctx context.Context) error {
 		return err
 	}
 	src := g.Source()
-	console.Info("\rUploading ", g.CreateObjects, " objects of ", src.String())
+	console.Info("\r正在上传 ", g.CreateObjects, " 对象 ", src.String())
 	var wg sync.WaitGroup
 	wg.Add(g.Concurrency)
 	g.Collector = NewCollector()
@@ -196,7 +196,7 @@ func (g *Get) Start(ctx context.Context, wait chan struct{}) (Operations, error)
 				opts.VersionID = obj.VersionID
 				o, err := client.GetObject(nonTerm, g.Bucket, obj.Name, opts)
 				if err != nil {
-					g.Error("download error:", err)
+					g.Error("下载出错:", err)
 					op.Err = err.Error()
 					op.End = time.Now()
 					rcv <- op
@@ -206,13 +206,13 @@ func (g *Get) Start(ctx context.Context, wait chan struct{}) (Operations, error)
 				fbr.r = o
 				n, err := io.Copy(ioutil.Discard, &fbr)
 				if err != nil {
-					g.Error("download error:", err)
+					g.Error("下载出错:", err)
 					op.Err = err.Error()
 				}
 				op.FirstByte = fbr.t
 				op.End = time.Now()
 				if n != op.Size && op.Err == "" {
-					op.Err = fmt.Sprint("unexpected download size. want:", op.Size, ", got:", n)
+					op.Err = fmt.Sprint("不符合期望的下载大小. 需要的是:", op.Size, ", 实际上是:", n)
 					g.Error(op.Err)
 				}
 				rcv <- op

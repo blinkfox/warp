@@ -29,34 +29,34 @@ var (
 		cli.IntFlag{
 			Name:  "objects",
 			Value: 2500,
-			Usage: "Number of objects to upload.",
+			Usage: "要上传的对象数.",
 		},
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "10MiB",
-			Usage: "Size of each generated object. Can be a number or 10KiB/MiB/GiB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 		cli.BoolFlag{
 			Name:  "range",
-			Usage: "Do ranged get operations. Will request with random offset and length.",
+			Usage: "进行分片 GET 请求操作时. offset 和 length 的值将是随机的.",
 		},
 	}
 )
 
 var getCmd = cli.Command{
 	Name:   "get",
-	Usage:  "benchmark get objects",
+	Usage:  "基准测试中获取对象 (get) 的请求操作",
 	Action: mainGet,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, getFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS]
   -> see https://github.com/minio/warp#get
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -84,7 +84,7 @@ func mainGet(ctx *cli.Context) error {
 
 func checkGetSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("Command takes no arguments")
+		console.Fatal("命令中没有附带参数")
 	}
 
 	checkAnalyze(ctx)

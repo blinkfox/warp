@@ -34,24 +34,24 @@ var mergeFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "benchdata",
 		Value: "",
-		Usage: "Output combined data to this file. By default unique filename is generated.",
+		Usage: "将合并的数据输出到该文件. 默认会生成唯一的文件名.",
 	},
 }
 
 var mergeCmd = cli.Command{
 	Name:   "merge",
-	Usage:  "merge existing benchmark data",
+	Usage:  "合并现有的基准测试数据",
 	Action: mainMerge,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, mergeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS] benchmark-data-file1 benchmark-data-file2 ... 
   -> see https://github.com/minio/warp#merging-benchmarks
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -61,7 +61,7 @@ func mainMerge(ctx *cli.Context) error {
 	checkMerge(ctx)
 	args := ctx.Args()
 	if len(args) <= 1 {
-		console.Fatal("Two or more benchmark data files must be supplied")
+		console.Fatal("必须提供两个或多个基准测试的数据文件")
 	}
 	var zstdDec, _ = zstd.NewReader(nil)
 	defer zstdDec.Close()
@@ -73,18 +73,18 @@ func mainMerge(ctx *cli.Context) error {
 	}
 	for _, arg := range args {
 		f, err := os.Open(arg)
-		fatalIf(probe.NewError(err), "Unable to open input file")
+		fatalIf(probe.NewError(err), "无法打开输入文件")
 		defer f.Close()
 		err = zstdDec.Reset(f)
-		fatalIf(probe.NewError(err), "Unable to decompress input")
+		fatalIf(probe.NewError(err), "无法解压缩输入文件")
 		ops, err := bench.OperationsFromCSV(zstdDec, false, ctx.Int("analyze.offset"), ctx.Int("analyze.limit"), log)
-		fatalIf(probe.NewError(err), "Unable to parse input")
+		fatalIf(probe.NewError(err), "无法解析输入文件")
 
 		threads = ops.OffsetThreads(threads)
 		allOps = append(allOps, ops...)
 	}
 	if len(allOps) == 0 {
-		return errors.New("benchmark files contains no data")
+		return errors.New("基准测试文件中没有任何数据")
 	}
 	fileName := ctx.String("benchdata")
 	if fileName == "" {
@@ -93,24 +93,24 @@ func mainMerge(ctx *cli.Context) error {
 	allOps.SortByStartTime()
 	f, err := os.Create(fileName + ".csv.zst")
 	if err != nil {
-		console.Error("Unable to write benchmark data:", err)
+		console.Error("无法写入基准测试数据:", err)
 	} else {
 		func() {
 			defer f.Close()
 			enc, err := zstd.NewWriter(f, zstd.WithEncoderLevel(zstd.SpeedBetterCompression))
-			fatalIf(probe.NewError(err), "Unable to compress benchmark output")
+			fatalIf(probe.NewError(err), "无法压缩基准测试数据到输出")
 
 			defer enc.Close()
 			err = allOps.CSV(enc, commandLine(ctx))
-			fatalIf(probe.NewError(err), "Unable to write benchmark output")
+			fatalIf(probe.NewError(err), "无法写入基准测试数据到输出")
 
-			console.Infof("Benchmark data written to %q\n", fileName+".csv.zst")
+			console.Infof("基准测试数据写入到了 %q\n", fileName+".csv.zst")
 		}()
 	}
 	for typ, ops := range allOps.ByOp() {
 		start, end := ops.ActiveTimeRange(true)
 		if !start.Before(end) {
-			console.Errorf("Type %v contains no overlapping items", typ)
+			console.Errorf("类型 %v 中没有重叠项", typ)
 		}
 	}
 	return nil

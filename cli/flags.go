@@ -29,68 +29,68 @@ import (
 var globalFlags = []cli.Flag{
 	cli.BoolFlag{
 		Name:   "quiet, q",
-		Usage:  "disable progress bar display",
+		Usage:  "禁用进度条",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:  "no-color",
-		Usage: "disable color theme",
+		Usage: "禁用颜色主题",
 	},
 	cli.BoolFlag{
 		Name:   "json",
-		Usage:  "enable JSON formatted output",
+		Usage:  "启用 JOSN 格式来输出数据",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:  "debug",
-		Usage: "enable debug output",
+		Usage: "启用 debug 调试输出",
 	},
 	cli.BoolFlag{
 		Name:  "insecure",
-		Usage: "disable TLS certificate verification",
+		Usage: "禁用 TLS 证书验证",
 	},
 	cli.BoolFlag{
 		Name:  "autocompletion",
-		Usage: "install auto-completion for your shell",
+		Usage: "为 shell 安装自动补全",
 	},
 }
 
 var profileFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "pprofdir",
-		Usage:  "Write profiles to this folder",
+		Usage:  "将配置信息写入到该文件夹",
 		Value:  "pprof",
 		Hidden: true,
 	},
 
 	cli.BoolFlag{
 		Name:   "cpu",
-		Usage:  "Write a local CPU profile",
+		Usage:  "写入本地 CPU 配置信息",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:   "mem",
-		Usage:  "Write an local allocation profile",
+		Usage:  "写入本地内存分配的配置信息",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:   "block",
-		Usage:  "Write a local goroutine blocking profile",
+		Usage:  "写入本地 goroutine 块配置信息",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:   "mutex",
-		Usage:  "Write a mutex contention profile",
+		Usage:  "写入互斥竞争的配置信息",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:   "threads",
-		Usage:  "Write a threas create profile",
+		Usage:  "写入互斥竞争的配置信息",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:   "trace",
-		Usage:  "Write an local execution trace",
+		Usage:  "写入本地执行时的跟踪信息",
 		Hidden: true,
 	},
 }
@@ -145,72 +145,72 @@ func commandLine(ctx *cli.Context) string {
 var ioFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "host",
-		Usage:  "host. Multiple hosts can be specified as a comma separated list.",
+		Usage:  "主机 host 地址，可以将多个主机 host 指定为用逗号分割的列表.",
 		EnvVar: appNameUC + "_HOST",
 		Value:  "127.0.0.1:9000",
 	},
 	cli.StringFlag{
 		Name:   "access-key",
-		Usage:  "Specify access key",
+		Usage:  "指定访问密钥 (access key)",
 		EnvVar: appNameUC + "_ACCESS_KEY",
 		Value:  "",
 	},
 	cli.StringFlag{
 		Name:   "secret-key",
-		Usage:  "Specify secret key",
+		Usage:  "指定私密密钥 (secret key)",
 		EnvVar: appNameUC + "_SECRET_KEY",
 		Value:  "",
 	},
 	cli.BoolFlag{
 		Name:   "tls",
-		Usage:  "Use TLS (HTTPS) for transport",
+		Usage:  "使用 TLS (HTTPS) 进行传输",
 		EnvVar: appNameUC + "_TLS",
 	},
 	cli.StringFlag{
 		Name:   "region",
-		Usage:  "Specify a custom region",
+		Usage:  "指定自定义的区域 (region)",
 		EnvVar: appNameUC + "_REGION",
 	},
 	cli.StringFlag{
 		Name:   "signature",
-		Usage:  "Specify a signature method. Available values are S3V2, S3V4",
+		Usage:  "指定签名算法. 值可以是 S3V2, S3V4，默认使用 S3V4",
 		Value:  "S3V4",
 		Hidden: true,
 	},
 	cli.BoolFlag{
 		Name:  "encrypt",
-		Usage: "encrypt/decrypt objects (using server-side encryption with random keys)",
+		Usage: "加密/解密对象 (使用带有随机密钥的服务器端加密)",
 	},
 	cli.StringFlag{
 		Name:  "bucket",
 		Value: appName + "-benchmark-bucket",
-		Usage: "Bucket to use for benchmark data. ALL DATA WILL BE DELETED IN BUCKET!",
+		Usage: "用于基准测试的存储桶. 该桶中的所有数据都将会被删除!",
 	},
 	cli.StringFlag{
 		Name:  "host-select",
 		Value: string(hostSelectTypeWeighed),
-		Usage: fmt.Sprintf("Host selection algorithm. Can be %q or %q", hostSelectTypeWeighed, hostSelectTypeRoundrobin),
+		Usage: fmt.Sprintf("主机 Host 的选择算法. 可以是 %q 或 %q", hostSelectTypeWeighed, hostSelectTypeRoundrobin),
 	},
 	cli.IntFlag{
 		Name:  "concurrent",
 		Value: 20,
-		Usage: "Run this many concurrent operations",
+		Usage: "运行基准测试时的并发请求数",
 	},
 	cli.BoolFlag{
 		Name:  "noprefix",
-		Usage: "Do not use separate prefix for each thread",
+		Usage: "不要为每个线程使用单独的前缀",
 	},
 	cli.BoolFlag{
 		Name:  "disable-multipart",
-		Usage: "disable multipart uploads",
+		Usage: "禁用分片上传",
 	},
 	cli.BoolFlag{
 		Name:  "md5",
-		Usage: "Add MD5 sum to uploads",
+		Usage: "上传过程中添加 MD5 值",
 	},
 	cli.StringFlag{
 		Name:  "storage-class",
 		Value: "",
-		Usage: "Specify custom storage class, for instance 'STANDARD' or 'REDUCED_REDUNDANCY'.",
+		Usage: "指定自定义的存储类, 如: 'STANDARD' 或者 'REDUCED_REDUNDANCY'.",
 	},
 }

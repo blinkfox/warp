@@ -61,10 +61,10 @@ func defaultOptions() Options {
 func WithSize(n int64) Option {
 	return func(o *Options) error {
 		if n <= 0 {
-			return errors.New("WithSize: size must be > 0")
+			return errors.New("WithSize: 大小必须 > 0")
 		}
 		if o.randSize && o.totalSize < 256 {
-			return errors.New("WithSize: random sized objects should be at least 256 bytes")
+			return errors.New("WithSize: 随机对象的大小至少需要 256 个字节")
 		}
 
 		o.totalSize = n
@@ -76,7 +76,7 @@ func WithSize(n int64) Option {
 func WithRandomSize(b bool) Option {
 	return func(o *Options) error {
 		if o.totalSize > 0 && o.totalSize < 256 {
-			return errors.New("WithRandomSize: Random sized objects should be at least 256 bytes")
+			return errors.New("WithRandomSize: 随机对象的大小至少需要 256 个字节")
 		}
 		o.randSize = b
 		return nil
@@ -87,10 +87,10 @@ func WithRandomSize(b bool) Option {
 func WithPrefixSize(n int) Option {
 	return func(o *Options) error {
 		if n < 0 {
-			return errors.New("WithPrefixSize: size must be >= 0 and <= 16")
+			return errors.New("WithPrefixSize: 大小必须 >= 0 和 <= 16")
 		}
 		if n > 16 {
-			return errors.New("WithPrefixSize: size must be >= 0 and <= 16")
+			return errors.New("WithPrefixSize: 大小必须 >= 0 和 <= 16")
 		}
 		o.randomPrefix = n
 		return nil

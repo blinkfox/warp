@@ -34,18 +34,18 @@ var cmpFlags = []cli.Flag{}
 
 var cmpCmd = cli.Command{
 	Name:   "cmp",
-	Usage:  "compare existing benchmark data",
+	Usage:  "比较现有的基准测试数据",
 	Action: mainCmp,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, analyzeFlags, cmpFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS] before-benchmark-data-file after-benchmark-data-file
   -> see https://github.com/minio/warp#comparing-benchmarks
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -63,12 +63,12 @@ func mainCmp(ctx *cli.Context) error {
 	}
 	readOps := func(s string) bench.Operations {
 		f, err := os.Open(s)
-		fatalIf(probe.NewError(err), "Unable to open input file")
+		fatalIf(probe.NewError(err), "无法打开输入文件")
 		defer f.Close()
 		err = zstdDec.Reset(f)
-		fatalIf(probe.NewError(err), "Unable to read input")
+		fatalIf(probe.NewError(err), "无法读取输入文件")
 		ops, err := bench.OperationsFromCSV(zstdDec, true, ctx.Int("analyze.offset"), ctx.Int("analyze.limit"), log)
-		fatalIf(probe.NewError(err), "Unable to parse input")
+		fatalIf(probe.NewError(err), "无法解析输入文件")
 		return ops
 	}
 	printCompare(ctx, readOps(args[0]), readOps(args[1]))
@@ -83,8 +83,8 @@ func printCompare(ctx *cli.Context, before, after bench.Operations) {
 			wrSegs = os.Stdout
 		} else {
 			f, err := os.Create(fn)
-			fatalIf(probe.NewError(err), "Unable to create create analysis output")
-			defer console.Println("Aggregated data saved to", fn)
+			fatalIf(probe.NewError(err), "无法创建分析后的输出文件")
+			defer console.Println("聚合的数据已保存到", fn)
 			defer f.Close()
 			wrSegs = f
 		}
@@ -92,7 +92,7 @@ func printCompare(ctx *cli.Context, before, after bench.Operations) {
 	_ = wrSegs
 	isMultiOp := before.IsMixed()
 	if isMultiOp != after.IsMixed() {
-		console.Fatal("Cannot compare multi-operation to single operation.")
+		console.Fatal("无法将多个请求操作与单个请求操作进行比较.")
 	}
 	timeDur := func(ops bench.Operations) time.Duration {
 		start, end := ops.ActiveTimeRange(!isMultiOp)
@@ -109,7 +109,7 @@ func printCompare(ctx *cli.Context, before, after bench.Operations) {
 		after := after.FilterByOp(typ)
 		console.Println("-------------------")
 		console.SetColor("Print", color.New(color.FgHiWhite))
-		console.Println("Operation:", typ)
+		console.Println("请求操作:", typ)
 		console.SetColor("Print", color.New(color.FgWhite))
 
 		cmp, err := bench.Compare(before, after, analysisDur(ctx, before.Duration()), !isMultiOp)
@@ -119,37 +119,37 @@ func printCompare(ctx *cli.Context, before, after bench.Operations) {
 		}
 
 		if len(before) != len(after) {
-			console.Println("Operations:", len(before), "->", len(after))
+			console.Println("请求操作:", len(before), "->", len(after))
 		}
 		if before.Threads() != after.Threads() {
-			console.Println("Concurrency:", before.Threads(), "->", after.Threads())
+			console.Println("并发量:", before.Threads(), "->", after.Threads())
 		}
 		if len(before.Endpoints()) != len(after.Endpoints()) {
-			console.Println("Endpoints:", len(before.Endpoints()), "->", len(after.Endpoints()))
+			console.Println("访问地址:", len(before.Endpoints()), "->", len(after.Endpoints()))
 		}
 		if !isMultiOp {
 			if before.FirstObjPerOp() != after.FirstObjPerOp() {
-				console.Println("Objects per operation:", before.FirstObjPerOp(), "->", after.FirstObjPerOp())
+				console.Println("每个请求操作的对象数:", before.FirstObjPerOp(), "->", after.FirstObjPerOp())
 			}
 		}
 		if timeDur(before) != timeDur(after) {
-			console.Println("Duration:", timeDur(before), "->", timeDur(after))
+			console.Println("持续时间:", timeDur(before), "->", timeDur(after))
 		}
-		console.Println("* Average:", cmp.Average)
+		console.Println("* 平均值:", cmp.Average)
 		if cmp.TTFB != nil {
-			console.Println("* First Byte:", cmp.TTFB)
+			console.Println("* 首个字节:", cmp.TTFB)
 		}
 		if !isMultiOp {
 			console.SetColor("Print", color.New(color.FgWhite))
-			console.Println("* Fastest:", cmp.Fastest)
-			console.Println("* 50% Median:", cmp.Median)
-			console.Println("* Slowest:", cmp.Slowest)
+			console.Println("* 最快:", cmp.Fastest)
+			console.Println("* 50% 中位数:", cmp.Median)
+			console.Println("* 最慢:", cmp.Slowest)
 		}
 	}
 }
 
 func checkCmp(ctx *cli.Context) {
 	if ctx.NArg() != 2 {
-		console.Fatal("Two data sources must be supplied")
+		console.Fatal("必须提供两个数据源")
 	}
 }

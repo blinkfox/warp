@@ -165,7 +165,7 @@ func (g *Stat) Start(ctx context.Context, wait chan struct{}) (Operations, error
 				opts.VersionID = obj.VersionID
 				objI, err := client.StatObject(nonTerm, g.Bucket, obj.Name, opts)
 				if err != nil {
-					g.Error("StatObject error: ", err)
+					g.Error("StatObject 出错: ", err)
 					op.Err = err.Error()
 					op.End = time.Now()
 					rcv <- op
@@ -174,7 +174,7 @@ func (g *Stat) Start(ctx context.Context, wait chan struct{}) (Operations, error
 				}
 				op.End = time.Now()
 				if objI.Size != obj.Size && op.Err == "" {
-					op.Err = fmt.Sprint("unexpected file size. want:", obj.Size, ", got:", objI.Size)
+					op.Err = fmt.Sprint("不符合期望的文件大小. 需要的是:", obj.Size, ", 实际上是:", objI.Size)
 					g.Error(op.Err)
 				}
 				rcv <- op

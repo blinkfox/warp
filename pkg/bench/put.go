@@ -81,7 +81,7 @@ func (u *Put) Start(ctx context.Context, wait chan struct{}) (Operations, error)
 				res, err := client.PutObject(nonTerm, u.Bucket, obj.Name, obj.Reader, obj.Size, opts)
 				op.End = time.Now()
 				if err != nil {
-					u.Error("upload error: ", err)
+					u.Error("上传出错: ", err)
 					op.Err = err.Error()
 				}
 				obj.VersionID = res.VersionID

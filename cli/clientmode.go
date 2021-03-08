@@ -34,23 +34,23 @@ var (
 // Put command.
 var clientCmd = cli.Command{
 	Name:   "client",
-	Usage:  "在客户端模式下运行 warp，接受连接来运行基准测试",
+	Usage:  "以客户端模式运行 warp，接受连接来运行基准测试",
 	Action: mainClient,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, clientFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS] [listen address]
   -> see https://github.com/minio/warp#multiple-hosts
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}
 
-EXAMPLES:
-  1. Listen on port '6001' with ip 192.168.1.101:
+示例:
+  1. 监听 ip 是 192.168.1.101 下的 '6001' 端口:
      {{.Prompt}} {{.HelpName}} 192.168.1.101:6001
  `,
 }
@@ -72,7 +72,7 @@ func mainClient(ctx *cli.Context) error {
 		fatal(errInvalidArgument(), "参数太多")
 	}
 	http.HandleFunc("/ws", serveWs)
-	console.Infoln("Listening on", addr)
+	console.Infoln("正在监听", addr)
 	fatalIf(probe.NewError(http.ListenAndServe(addr, nil)), "无法启动客户端")
 	return nil
 }

@@ -28,35 +28,35 @@ var (
 		cli.IntFlag{
 			Name:  "objects",
 			Value: 2500,
-			Usage: "Number of objects to upload.",
+			Usage: "要上传的对象数.",
 		},
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "10MiB",
-			Usage: "Size of each generated object. Can be a number or 10KiB/MiB/GiB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 		cli.StringFlag{
 			Name:  "query",
 			Value: "select * from s3object",
-			Usage: "select query expression",
+			Usage: "select 查询的表达式",
 		},
 	}
 )
 
 var selectCmd = cli.Command{
 	Name:   "select",
-	Usage:  "benchmark select objects",
+	Usage:  "基准测试中选择对象 (select) 的请求操作",
 	Action: mainSelect,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, selectFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS]
   -> see https://github.com/minio/warp
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }

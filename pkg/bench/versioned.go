@@ -171,7 +171,7 @@ func (g *Versioned) Start(ctx context.Context, wait chan struct{}) (Operations, 
 					getOpts.VersionID = obj.VersionID
 					fbr.r, err = client.GetObject(nonTerm, g.Bucket, obj.Name, getOpts)
 					if err != nil {
-						g.Error("download error: ", err)
+						g.Error("下载出错: ", err)
 						op.Err = err.Error()
 						op.End = time.Now()
 						rcv <- op
@@ -181,13 +181,13 @@ func (g *Versioned) Start(ctx context.Context, wait chan struct{}) (Operations, 
 					}
 					n, err := io.Copy(ioutil.Discard, &fbr)
 					if err != nil {
-						g.Error("download error: ", err)
+						g.Error("下载出错: ", err)
 						op.Err = err.Error()
 					}
 					op.FirstByte = fbr.t
 					op.End = time.Now()
 					if n != obj.Size && op.Err == "" {
-						op.Err = fmt.Sprint("unexpected download size. want:", obj.Size, ", got:", n)
+						op.Err = fmt.Sprint("不符合期望的文件大小. 需要的是:", obj.Size, ", 实际上是:", n)
 						g.Error(op.Err)
 					}
 					rcv <- op
@@ -209,7 +209,7 @@ func (g *Versioned) Start(ctx context.Context, wait chan struct{}) (Operations, 
 					res, err := client.PutObject(nonTerm, g.Bucket, obj.Name, obj.Reader, obj.Size, putOpts)
 					op.End = time.Now()
 					if err != nil {
-						g.Error("upload error: ", err)
+						g.Error("上传出错: ", err)
 						op.Err = err.Error()
 					}
 
@@ -245,7 +245,7 @@ func (g *Versioned) Start(ctx context.Context, wait chan struct{}) (Operations, 
 					op.End = time.Now()
 					clDone()
 					if err != nil {
-						g.Error("delete error:", err)
+						g.Error("删除出错:", err)
 						op.Err = err.Error()
 					}
 					rcv <- op
@@ -265,19 +265,19 @@ func (g *Versioned) Start(ctx context.Context, wait chan struct{}) (Operations, 
 					statOpts.VersionID = obj.VersionID
 					objI, err := client.StatObject(nonTerm, g.Bucket, obj.Name, statOpts)
 					if err != nil {
-						g.Error("stat error:", err)
+						g.Error("stat 错误:", err)
 						op.Err = err.Error()
 					}
 					op.End = time.Now()
 					if objI.Size != obj.Size && op.Err == "" {
-						op.Err = fmt.Sprint("unexpected stat size. want:", obj.Size, ", got:", objI.Size)
+						op.Err = fmt.Sprint("不符合期望的文件大小. 需要的是:", obj.Size, ", 实际上是:", objI.Size)
 						g.Error(op.Err)
 					}
 					rcv <- op
 					objDone()
 					clDone()
 				default:
-					g.Error("unknown operation:", operation)
+					g.Error("未知的请求操作:", operation)
 				}
 			}
 		}(i)
@@ -379,7 +379,7 @@ func (m *VersionedDistribution) randomObjRead() (obj generator.Object, done func
 			m.objects[k] = o
 		}
 	}
-	panic("ran out of objects")
+	panic("没有对象了")
 }
 
 func (m *VersionedDistribution) deleteRandomObj() generator.Object {
@@ -396,7 +396,7 @@ func (m *VersionedDistribution) deleteRandomObj() generator.Object {
 		m.objects[k] = o
 		return obj
 	}
-	panic("ran out of objects")
+	panic("没有对象了")
 }
 
 // newVersion will modify the object to be a version of an existing object.

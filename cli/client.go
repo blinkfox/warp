@@ -154,7 +154,7 @@ func getClient(ctx *cli.Context, host string) (*minio.Client, error) {
 		// if Signature version '2' use NewV2 directly.
 		creds = credentials.NewStaticV2(ctx.String("access-key"), ctx.String("secret-key"), "")
 	default:
-		fatal(probe.NewError(errors.New("未知的签名方法，请提供 S3V2 和 S3V4 签名")), strings.ToUpper(ctx.String("signature")))
+		fatal(probe.NewError(errors.New("未知的签名方法，请提供 S3V2 或者 S3V4 签名")), strings.ToUpper(ctx.String("signature")))
 	}
 
 	cl, err := minio.New(host, &minio.Options{

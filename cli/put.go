@@ -29,7 +29,7 @@ var (
 		cli.StringFlag{
 			Name:  "obj.size",
 			Value: "10MiB",
-			Usage: "Size of each generated object. Can be a number or 10KiB/MiB/GiB. All sizes are base 2 binary.",
+			Usage: "生成每个对象的大小. 可以是数字或 10KiB/MiB/GiB. 数字必须是 2^n 倍.",
 		},
 	}
 )
@@ -37,18 +37,18 @@ var (
 // Put command.
 var putCmd = cli.Command{
 	Name:   "put",
-	Usage:  "benchmark put objects",
+	Usage:  "基准测试中获取对象 (put) 的请求操作",
 	Action: mainPut,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, putFlags, genFlags, benchFlags, analyzeFlags),
-	CustomHelpTemplate: `NAME:
+	CustomHelpTemplate: `名称:
   {{.HelpName}} - {{.Usage}}
 
-USAGE:
+使用:
   {{.HelpName}} [FLAGS]
   -> see https://github.com/minio/warp#put
 
-FLAGS:
+参数:
   {{range .VisibleFlags}}{{.}}
   {{end}}`,
 }
@@ -82,7 +82,7 @@ func putOpts(ctx *cli.Context) minio.PutObjectOptions {
 
 func checkPutSyntax(ctx *cli.Context) {
 	if ctx.NArg() > 0 {
-		console.Fatal("Command takes no arguments")
+		console.Fatal("命令中没有附带参数")
 	}
 
 	checkAnalyze(ctx)

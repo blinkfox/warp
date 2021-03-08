@@ -43,49 +43,49 @@ var benchFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "benchdata",
 		Value: "",
-		Usage: "Output benchmark+profile data to this file. By default unique filename is generated.",
+		Usage: "将基准测试+配置文件的数据输出到此文件. 默认会生成唯一的文件名.",
 	},
 	cli.StringFlag{
 		Name:  "serverprof",
-		Usage: "Run MinIO server profiling during benchmark; possible values are 'cpu', 'mem', 'block', 'mutex' and 'trace'.",
+		Usage: "在基准测试期间运行 MinIO 服务器配置文件. 值可以是 'cpu', 'mem', 'block', 'mutex' 和 'trace'.",
 		Value: "",
 	},
 	cli.DurationFlag{
 		Name:  "duration",
-		Usage: "Duration to run the benchmark. Use 's' and 'm' to specify seconds and minutes.",
+		Usage: "运行基准测试的持续时间. 使用 's' 和 'm' 来指定秒和分钟数，如：'2m34s'. 默认 5 分钟.",
 		Value: 5 * time.Minute,
 	},
 	cli.BoolFlag{
 		Name:  "autoterm",
-		Usage: "Auto terminate when benchmark is considered stable.",
+		Usage: "当基准测试运行稳定时就自动终止.",
 	},
 	cli.DurationFlag{
 		Name:  "autoterm.dur",
-		Usage: "Minimum duration where output must have been stable to allow automatic termination.",
+		Usage: "输出稳定后就自动终止运行的最短持续时间.",
 		Value: 10 * time.Second,
 	},
 	cli.Float64Flag{
 		Name:  "autoterm.pct",
-		Usage: "The percentage the last 6/25 time blocks must be within current speed to auto terminate.",
+		Usage: "最后的 6/25 个时间段内的运行速度，必须在当前速度内才能自动终止.",
 		Value: 7.5,
 	},
 	cli.BoolFlag{
 		Name:  "noclear",
-		Usage: "Do not clear bucket before or after running benchmarks. Use when running multiple clients.",
+		Usage: "在运行基准测试之前或之后，请不要清除存储桶，因为在运行多个客户端时还需要使用.",
 	},
 	cli.BoolFlag{
 		Name:   "keep-data",
-		Usage:  "Leave benchmark data. Do not run cleanup after benchmark. Bucket will still be cleaned prior to benchmark",
+		Usage:  "保留基准测试数据. 基准测试结束后请不要清除数据，下次运行基准测试之前数据会自动被清除.",
 		Hidden: true,
 	},
 	cli.StringFlag{
 		Name:  "syncstart",
-		Usage: "Specify a benchmark start time. Time format is 'hh:mm' where hours are specified in 24h format, server TZ.",
+		Usage: "指定基准测试的开始时间. 时间格式为 'hh:mm'，使用 24h 小时格式.",
 		Value: "",
 	},
 	cli.StringFlag{
 		Name:   "warp-client",
-		Usage:  "Connect to warp clients and run benchmarks there.",
+		Usage:  "连接到 warp 客户端，并在客户端中运行基准测.",
 		EnvVar: "",
 		Value:  "",
 	},
@@ -101,7 +101,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 		return runClientBenchmark(ctx, b, ab)
 	}
 	if done, err := runServerBenchmark(ctx); done || err != nil {
-		fatalIf(probe.NewError(err), "Error running remote benchmark")
+		fatalIf(probe.NewError(err), "运行远程基准测试时出错")
 		return nil
 	}
 
@@ -160,7 +160,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 	}
 
 	err := b.Prepare(context.Background())
-	fatalIf(probe.NewError(err), "Error preparing server")
+	fatalIf(probe.NewError(err), "准备服务端时出错")
 	if c.PrepareProgress != nil {
 		close(c.PrepareProgress)
 		<-pgDone
@@ -172,7 +172,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 		startTime := parseLocalTime(st)
 		now := time.Now()
 		if startTime.Before(now) {
-			monitor.Errorln("Did not manage to prepare before syncstart")
+			monitor.Errorln("无法在同步开始前进行准备")
 			tStart = time.Now()
 		} else {
 			tStart = startTime
@@ -185,7 +185,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 	start := make(chan struct{})
 	go func() {
 		<-time.After(time.Until(tStart))
-		monitor.InfoLn("Benchmark starting...")
+		monitor.InfoLn("开始运行基准测试 ...")
 		close(start)
 	}()
 
@@ -196,7 +196,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 	}
 
 	prof, err := startProfiling(ctx2, ctx)
-	fatalIf(probe.NewError(err), "Unable to start profile.")
+	fatalIf(probe.NewError(err), "无法启动 profile 配置文件.")
 	monitor.InfoLn("Starting benchmark in ", time.Until(tStart).Round(time.Second), "...")
 	pgDone = make(chan struct{})
 	if !globalQuiet && !globalJSON {
@@ -216,7 +216,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 					}
 					pg.Set64(int64(elapsed))
 					pg.Update()
-					monitor.InfoQuietln(fmt.Sprintf("Running benchmark: %0.0f%%...", 100*float64(elapsed)/float64(benchDur)))
+					monitor.InfoQuietln(fmt.Sprintf("基准运行中: %0.0f%%...", 100*float64(elapsed)/float64(benchDur)))
 				case <-done:
 					pg.Set64(int64(benchDur))
 					pg.Update()
@@ -232,7 +232,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 	<-pgDone
 
 	// Previous context is canceled, create a new...
-	monitor.InfoLn("Saving benchmark data...")
+	monitor.InfoLn("正在保存基准测试数据...")
 	ctx2 = context.Background()
 	ops.SortByStartTime()
 	ops.SetClientID(cID)
@@ -240,27 +240,27 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 
 	f, err := os.Create(fileName + ".csv.zst")
 	if err != nil {
-		monitor.Errorln("Unable to write benchmark data:", err)
+		monitor.Errorln("无法写入基准测试数据:", err)
 	} else {
 		func() {
 			defer f.Close()
 			enc, err := zstd.NewWriter(f, zstd.WithEncoderLevel(zstd.SpeedBetterCompression))
-			fatalIf(probe.NewError(err), "Unable to compress benchmark output")
+			fatalIf(probe.NewError(err), "无法压缩基准测试数据到输出")
 
 			defer enc.Close()
 			err = ops.CSV(enc, commandLine(ctx))
-			fatalIf(probe.NewError(err), "Unable to write benchmark output")
+			fatalIf(probe.NewError(err), "无法写入基准测试数据到输出")
 
-			monitor.InfoLn(fmt.Sprintf("Benchmark data written to %q\n", fileName+".csv.zst"))
+			monitor.InfoLn(fmt.Sprintf("基准测试数据写入到了 %q\n", fileName+".csv.zst"))
 		}()
 	}
 	monitor.OperationsReady(ops, fileName, commandLine(ctx))
 	printAnalysis(ctx, ops)
 	if !ctx.Bool("keep-data") && !ctx.Bool("noclear") {
-		monitor.InfoLn("Starting cleanup...")
+		monitor.InfoLn("开始清理数据 ...")
 		b.Cleanup(context.Background())
 	}
-	monitor.InfoLn("Cleanup Done.")
+	monitor.InfoLn("数据清理完成.")
 	return nil
 }
 
@@ -371,23 +371,23 @@ func runClientBenchmark(ctx *cli.Context, b bench.Benchmark, cb *clientBenchmark
 	// Start after waiting a second or until we reached the start time.
 	benchDur := ctx.Duration("duration")
 	go func() {
-		console.Infoln("Waiting")
+		console.Infoln("等待中")
 		// Wait for start signal
 		select {
 		case <-ctx2.Done():
-			console.Infoln("Aborted")
+			console.Infoln("已中止")
 			return
 		case <-start:
 		}
-		console.Infoln("Starting")
+		console.Infoln("已开始")
 		// Finish after duration
 		select {
 		case <-ctx2.Done():
-			console.Infoln("Aborted")
+			console.Infoln("已中止")
 			return
 		case <-time.After(benchDur):
 		}
-		console.Infoln("Stopping")
+		console.Infoln("停止中")
 		// Stop the benchmark
 		cancel()
 	}()
@@ -411,18 +411,18 @@ func runClientBenchmark(ctx *cli.Context, b bench.Benchmark, cb *clientBenchmark
 
 	f, err := os.Create(fileName + ".csv.zst")
 	if err != nil {
-		console.Error("Unable to write benchmark data:", err)
+		console.Error("无法写入基准测试数据:", err)
 	} else {
 		func() {
 			defer f.Close()
 			enc, err := zstd.NewWriter(f, zstd.WithEncoderLevel(zstd.SpeedBetterCompression))
-			fatalIf(probe.NewError(err), "Unable to compress benchmark output")
+			fatalIf(probe.NewError(err), "无法压缩基准测试数据到输出")
 
 			defer enc.Close()
 			err = ops.CSV(enc, commandLine(ctx))
-			fatalIf(probe.NewError(err), "Unable to write benchmark output")
+			fatalIf(probe.NewError(err), "无法写入基准测试数据到输出")
 
-			console.Infof("Benchmark data written to %q\n", fileName+".csv.zst")
+			console.Infof("基准测试数据写入到了 %q\n", fileName+".csv.zst")
 		}()
 	}
 
@@ -431,7 +431,7 @@ func runClientBenchmark(ctx *cli.Context, b bench.Benchmark, cb *clientBenchmark
 		return err
 	}
 	if !ctx.Bool("keep-data") && !ctx.Bool("noclear") {
-		console.Infoln("Starting cleanup...")
+		console.Infoln("开始清理数据 ...")
 		b.Cleanup(context.Background())
 	}
 	cb.stageDone(stageCleanup, nil)
@@ -456,7 +456,7 @@ func startProfiling(ctx2 context.Context, ctx *cli.Context) (*runningProfiles, e
 	if cmdErr != nil {
 		return nil, cmdErr
 	}
-	console.Infoln("Server profiling successfully started.")
+	console.Infoln("已成功启动了服务器分析.")
 	return &r, nil
 }
 
@@ -467,12 +467,12 @@ func (rp *runningProfiles) stop(ctx2 context.Context, ctx *cli.Context, fileName
 
 	// Ask for profile data, which will come compressed with zip format
 	zippedData, adminErr := rp.client.DownloadProfilingData(ctx2)
-	fatalIf(probe.NewError(adminErr), "Unable to download profile data.")
+	fatalIf(probe.NewError(adminErr), "无法下载配置文件数据.")
 	defer zippedData.Close()
 
 	f, err := os.Create(fileName)
 	if err != nil {
-		console.Error("Unable to write profile data:", err)
+		console.Error("无法写入配置文件数据:", err)
 		return
 	}
 	defer f.Close()
@@ -480,11 +480,11 @@ func (rp *runningProfiles) stop(ctx2 context.Context, ctx *cli.Context, fileName
 	// Copy zip content to target download file
 	_, err = io.Copy(f, zippedData)
 	if err != nil {
-		console.Error("Unable to download profile data:", err)
+		console.Error("无法下载配置文件数据:", err)
 		return
 	}
 
-	console.Infof("Profile data successfully downloaded as %s\n", fileName)
+	console.Infof("配置文件数据已成功下载为 %s\n", fileName)
 }
 
 func checkBenchmark(ctx *cli.Context) {
@@ -510,22 +510,22 @@ func checkBenchmark(ctx *cli.Context) {
 			}
 		}
 		if !supportedProfiler {
-			fatalIf(errDummy(), "Profiler type %s unrecognized. Possible values are: %v.", profilerType, profilerTypes)
+			fatalIf(errDummy(), "无法识别 Profiler 类型: %s . 可能的值是: %v.", profilerType, profilerTypes)
 		}
 	}
 	if st := ctx.String("syncstart"); st != "" {
 		t := parseLocalTime(st)
 		if t.Before(time.Now()) {
-			fatalIf(errDummy(), "syncstart is in the past: %v", t)
+			fatalIf(errDummy(), "syncstart 已通过: %v", t)
 		}
 	}
 	if ctx.Bool("autoterm") {
 		// TODO: autoterm cannot be used when in client/server mode
 		if ctx.Duration("autoterm.dur") <= 0 {
-			fatalIf(errDummy(), "autoterm.dur cannot be zero or negative")
+			fatalIf(errDummy(), "autoterm.dur 的值不能是 0 或者负数")
 		}
 		if ctx.Float64("autoterm.pct") <= 0 {
-			fatalIf(errDummy(), "autoterm.pct cannot be zero or negative")
+			fatalIf(errDummy(), "autoterm.pct 的值不能是 0 或者负数")
 		}
 	}
 }
@@ -535,7 +535,7 @@ const timeLayout = "15:04"
 
 func parseLocalTime(s string) time.Time {
 	t, err := time.ParseInLocation(timeLayout, s, time.Local)
-	fatalIf(probe.NewError(err), "Unable to parse time: %s", s)
+	fatalIf(probe.NewError(err), "不能解析时间: %s", s)
 	now := time.Now()
 	y, m, d := now.Date()
 	t = t.AddDate(y, int(m)-1, d-1)
