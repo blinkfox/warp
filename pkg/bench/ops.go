@@ -136,11 +136,11 @@ func (c *Collector) AutoTerm(ctx context.Context, op string, threshold float64, 
 			}
 			// All checks passed.
 			if mb > 0 {
-				console.Printf("\rThroughput %0.01fMiB/s within %f%% for %v. Assuming stability. Terminating benchmark.\n",
+				console.Printf("\r吞吐量 %0.01fMiB/s within %f%% for %v. Assuming stability. 停止了基准测试.\n",
 					mb, threshold*100,
 					segs[0].Duration().Round(time.Millisecond)*time.Duration(len(segs)+1))
 			} else {
-				console.Printf("\rThroughput %0.01f objects/s within %f%% for %v. Assuming stability. Terminating benchmark.\n",
+				console.Printf("\r吞吐量 %0.01f objects/s within %f%% for %v. Assuming stability. 停止了基准测试.\n",
 					objs, threshold*100,
 					segs[0].Duration().Round(time.Millisecond)*time.Duration(len(segs)+1))
 			}

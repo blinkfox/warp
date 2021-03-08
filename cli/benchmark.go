@@ -132,7 +132,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 			defer pg.Finish()
 			tick := time.Tick(time.Millisecond * 125)
 			pg.Set(-1)
-			pg.SetCaption("Preparing: ")
+			pg.SetCaption("准备中: ")
 			newVal := int64(-1)
 			for {
 				select {
@@ -197,14 +197,14 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 
 	prof, err := startProfiling(ctx2, ctx)
 	fatalIf(probe.NewError(err), "无法启动 profile 配置文件.")
-	monitor.InfoLn("Starting benchmark in ", time.Until(tStart).Round(time.Second), "...")
+	monitor.InfoLn("开始启动基准测试 ", time.Until(tStart).Round(time.Second), "...")
 	pgDone = make(chan struct{})
 	if !globalQuiet && !globalJSON {
 		pg := newProgressBar(int64(benchDur), pb.U_DURATION)
 		go func() {
 			defer close(pgDone)
 			defer pg.Finish()
-			pg.SetCaption("Benchmarking:")
+			pg.SetCaption("基准测试中:")
 			tick := time.Tick(time.Millisecond * 125)
 			done := ctx2.Done()
 			for {
@@ -260,7 +260,7 @@ func runBench(ctx *cli.Context, b bench.Benchmark) error {
 		monitor.InfoLn("开始清理数据 ...")
 		b.Cleanup(context.Background())
 	}
-	monitor.InfoLn("数据清理完成.")
+	monitor.InfoLn("基准测试数据已清理完毕.")
 	return nil
 }
 

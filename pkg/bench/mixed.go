@@ -159,7 +159,7 @@ func (g *Mixed) Prepare(ctx context.Context) error {
 		return err
 	}
 	src := g.Source()
-	console.Info("\rUploading ", g.CreateObjects, " objects of ", src.String())
+	console.Info("\r正在上传 ", g.CreateObjects, " 个对象: ", src.String())
 	var wg sync.WaitGroup
 	wg.Add(g.Concurrency)
 	g.Collector = NewCollector()
@@ -365,7 +365,7 @@ func (g *Mixed) Start(ctx context.Context, wait chan struct{}) (Operations, erro
 					}
 					op.End = time.Now()
 					if objI.Size != obj.Size && op.Err == "" {
-						op.Err = fmt.Sprint("unexpected stat size. want:", obj.Size, ", got:", objI.Size)
+						op.Err = fmt.Sprint("不符合期望的 stat 大小. 需要的是:", obj.Size, ", 实际上是:", objI.Size)
 						g.Error(op.Err)
 					}
 					rcv <- op

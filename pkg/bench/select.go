@@ -50,7 +50,7 @@ func (g *Select) Prepare(ctx context.Context) error {
 		return err
 	}
 	src := g.Source()
-	console.Info("\rUploading ", g.CreateObjects, " objects of ", src.String())
+	console.Info("\r正在上传 ", g.CreateObjects, " 个对象: ", src.String())
 	var wg sync.WaitGroup
 	wg.Add(g.Concurrency)
 	g.Collector = NewCollector()

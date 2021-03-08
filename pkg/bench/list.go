@@ -50,9 +50,9 @@ func (d *List) Prepare(ctx context.Context) error {
 	src := d.Source()
 	objPerPrefix := d.CreateObjects / d.Concurrency
 	if d.NoPrefix {
-		console.Info("\rUploading ", objPerPrefix*d.Concurrency, " objects of ", src.String(), " with no prefixes")
+		console.Info("\r正在上传 ", objPerPrefix*d.Concurrency, " 个对象: ", src.String(), ", 没有前缀")
 	} else {
-		console.Info("\rUploading ", objPerPrefix*d.Concurrency, " objects of ", src.String(), " with ", d.Concurrency, " prefixes")
+		console.Info("\r正在上传 ", objPerPrefix*d.Concurrency, " 个对象: ", src.String(), " 有 ", d.Concurrency, " 个前缀")
 	}
 	var wg sync.WaitGroup
 	wg.Add(d.Concurrency)

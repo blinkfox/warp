@@ -212,7 +212,7 @@ func printMixedOpAnalysis(ctx *cli.Context, aggr aggregate.Aggregated, details b
 	console.SetColor("Print", color.New(color.FgHiWhite))
 	dur := time.Duration(aggr.MixedServerStats.MeasureDurationMillis) * time.Millisecond
 	dur = dur.Round(time.Second)
-	console.Printf("\n集群总计: %v over %v.\n", aggr.MixedServerStats.StringDetails(details), dur)
+	console.Printf("\n结果总计: %v 持续时间 %v.\n", aggr.MixedServerStats.StringDetails(details), dur)
 	if aggr.MixedServerStats.Errors > 0 {
 		console.SetColor("Print", color.New(color.FgHiRed))
 		console.Print("总错误数:", aggr.MixedServerStats.Errors, ".\n")
