@@ -45,7 +45,7 @@ var (
 
 var selectCmd = cli.Command{
 	Name:   "select",
-	Usage:  "基准测试中选择对象 (select) 的请求操作",
+	Usage:  "选择对象 (select) 请求操作的基准测试",
 	Action: mainSelect,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, selectFlags, genFlags, benchFlags, analyzeFlags),

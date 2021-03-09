@@ -41,7 +41,7 @@ var (
 
 var statCmd = cli.Command{
 	Name:   "stat",
-	Usage:  "基准测试中获取对象元数据信息 (stat) 的请求操作",
+	Usage:  "获取对象元数据信息 (stat) 请求操作的基准测试",
 	Action: mainStat,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, statFlags, genFlags, benchFlags, analyzeFlags),

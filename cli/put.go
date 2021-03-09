@@ -37,7 +37,7 @@ var (
 // Put command.
 var putCmd = cli.Command{
 	Name:   "put",
-	Usage:  "基准测试中获取对象 (put) 的请求操作",
+	Usage:  "获取对象 (put) 请求操作的基准测试",
 	Action: mainPut,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, putFlags, genFlags, benchFlags, analyzeFlags),

@@ -45,7 +45,7 @@ var (
 
 var deleteCmd = cli.Command{
 	Name:   "delete",
-	Usage:  "基准测试中删除对象 (delete) 的请求操作",
+	Usage:  "删除对象 (delete) 请求操作的基准测试",
 	Action: mainDelete,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, deleteFlags, genFlags, benchFlags, analyzeFlags),

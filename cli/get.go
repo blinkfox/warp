@@ -45,7 +45,7 @@ var (
 
 var getCmd = cli.Command{
 	Name:   "get",
-	Usage:  "基准测试中获取对象 (get) 的请求操作",
+	Usage:  "获取对象 (get) 请求操作的基准测试",
 	Action: mainGet,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, getFlags, genFlags, benchFlags, analyzeFlags),

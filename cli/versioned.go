@@ -64,7 +64,7 @@ var (
 
 var versionedCmd = cli.Command{
 	Name:   "versioned",
-	Usage:  "基准测试中混合版本对象 (versioned) 的请求操作",
+	Usage:  "混合对象版本 (versioned) 功能请求操作的基准测试",
 	Action: mainVersioned,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, versionedFlags, genFlags, benchFlags, analyzeFlags),

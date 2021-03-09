@@ -40,7 +40,7 @@ var (
 
 var listCmd = cli.Command{
 	Name:   "list",
-	Usage:  "基准测试中列出对象 (list) 的请求操作",
+	Usage:  "列出对象 (list) 请求操作的基准测试",
 	Action: mainList,
 	Before: setGlobalsFromContext,
 	Flags:  combineFlags(globalFlags, ioFlags, listFlags, genFlags, benchFlags, analyzeFlags),
