@@ -2,6 +2,10 @@ module github.com/blinkfox/warp
 
 go 1.14
 
+replace (
+    github.com/minio/warp => github.com/blinkfox/warp
+)
+
 require (
 	github.com/bygui86/multi-profile v1.3.1
 	github.com/cheggaaa/pb v1.0.29
