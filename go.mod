@@ -1,4 +1,4 @@
-module github.com/minio/warp
+module github.com/blinkfox/warp
 
 go 1.14
 
