@@ -348,6 +348,6 @@ func (t TTFB) String() string {
 	if t.Average == 0 {
 		return ""
 	}
-	return fmt.Sprintf("Average: %v, Median: %v, Best: %v, Worst: %v",
+	return fmt.Sprintf("平均: %v, 中间: %v, 最佳: %v, 最差: %v",
 		t.Average.Round(time.Millisecond), t.Median.Round(time.Millisecond), t.Best.Round(time.Millisecond), t.Worst.Round(time.Millisecond))
 }

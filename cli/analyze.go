@@ -186,7 +186,7 @@ func printMixedOpAnalysis(ctx *cli.Context, aggr aggregate.Aggregated, details b
 		}
 		eps := ops.ThroughputByHost
 		if len(eps) == 1 || !details {
-			console.Println(" * 吞吐量:", ops.Throughput.StringDetails(details))
+			console.Println("* 吞吐量:", ops.Throughput.StringDetails(details))
 		}
 
 		if len(eps) > 1 && details {
@@ -452,7 +452,7 @@ func printRequestAnalysis(ctx *cli.Context, ops aggregate.Operation, details boo
 			"\n")
 
 		if reqs.FirstByte != nil {
-			console.Println(" * First Byte:", reqs.FirstByte)
+			console.Println("* 首个字节:", reqs.FirstByte)
 		}
 
 		if reqs.FirstAccess != nil {
@@ -510,11 +510,11 @@ func printRequestAnalysis(ctx *cli.Context, ops aggregate.Operation, details boo
 	for _, s := range sizes {
 
 		console.SetColor("Print", color.New(color.FgHiWhite))
-		console.Print("\nRequest size ", s.MinSizeString, " -> ", s.MaxSizeString, ". Requests - ", s.Requests, ":\n")
+		console.Print("\n请求操作大小 ", s.MinSizeString, " -> ", s.MaxSizeString, ". Requests - ", s.Requests, ":\n")
 		console.SetColor("Print", color.New(color.FgWhite))
 
 		console.Print(""+
-			" * 吞吐量: 平均: ", bench.Throughput(s.BpsAverage),
+			"* 吞吐量: 平均: ", bench.Throughput(s.BpsAverage),
 			", 50%: ", bench.Throughput(s.BpsMedian),
 			", 90%: ", bench.Throughput(s.Bps90),
 			", 99%: ", bench.Throughput(s.Bps99),
@@ -523,7 +523,7 @@ func printRequestAnalysis(ctx *cli.Context, ops aggregate.Operation, details boo
 			"\n")
 
 		if s.FirstByte != nil {
-			console.Println(" * 首个字节:", s.FirstByte)
+			console.Println("首个字节:", s.FirstByte)
 		}
 
 		if s.FirstAccess != nil {
@@ -537,7 +537,7 @@ func printRequestAnalysis(ctx *cli.Context, ops aggregate.Operation, details boo
 				", 最慢: ", bench.Throughput(s.BpsSlowest),
 				"\n")
 			if s.FirstByte != nil {
-				console.Print(" * 首次访问 TTFB: ", s.FirstByte, "\n")
+				console.Print("* 首次访问 TTFB: ", s.FirstByte, "\n")
 			}
 		}
 

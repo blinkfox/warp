@@ -137,7 +137,7 @@ func printCompare(ctx *cli.Context, before, after bench.Operations) {
 		}
 		console.Println("* 平均值:", cmp.Average)
 		if cmp.TTFB != nil {
-			console.Println("* 首个字节:", cmp.TTFB)
+			console.Println("首个字节:", cmp.TTFB)
 		}
 		if !isMultiOp {
 			console.SetColor("Print", color.New(color.FgWhite))

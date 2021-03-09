@@ -66,7 +66,7 @@ func (c CmpSegment) String() string {
 	mibA, _, objsA := c.After.SpeedPerSec()
 
 	if c.ThroughputPerSec != 0 {
-		speed = fmt.Sprintf("%s%.02f%% (%s%.1f MiB/s) throughput, ",
+		speed = fmt.Sprintf("%s%.02f%% (%s%.1f MiB/s) 吞吐量, ",
 			plusPositiveF(c.ThroughputPerSec), c.ThroughputPerSec,
 			plusPositiveF(c.ThroughputPerSec), mibA-mibB,
 		)
@@ -114,7 +114,7 @@ func (t *TTFBCmp) String() string {
 	if t == nil {
 		return ""
 	}
-	return fmt.Sprintf("Average: %s%v (%s%.f%%), Median: %s%v (%s%.f%%), Best: %s%v (%s%.f%%), Worst: %s%v (%s%.f%%)",
+	return fmt.Sprintf("平均: %s%v (%s%.f%%), 中间: %s%v (%s%.f%%), 最好: %s%v (%s%.f%%), 最差: %s%v (%s%.f%%)",
 		plusPositiveD(t.Average),
 		t.Average,
 		plusPositiveD(t.Average),
